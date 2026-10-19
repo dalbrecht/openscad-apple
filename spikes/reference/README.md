@@ -4,6 +4,8 @@ The native application never links these dependencies. This reference exists for
 behavioral comparison against upstream GUI tree `b9c7abb9a055808247dc67fc8f672213225bcf43`
 (from upstream `7bbf603833e167712e9cc7ae3432001dc26817d0`). The isolated checkout was
 core commit `65b79fac2aba2cb8911703a9e7a29949af8b7948`; its Qt tree is identical.
+For that historical checkout after the squash merge, fetch the preserved history
+with `git fetch origin refs/pull/2/head` before checking out the commit.
 
 Reference-only Homebrew packages: opencsg, qtbase, qtsvg, qtmultimedia, qt5compat,
 qscintilla2. Use the official Lib3MF 2.5.0 Darwin SDK from

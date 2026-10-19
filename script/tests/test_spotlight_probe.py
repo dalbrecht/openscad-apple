@@ -30,10 +30,10 @@ class SpotlightProbeTests(unittest.TestCase):
                 text = ''
                 if arguments[0] == 'mdimport' and '-o' in arguments:
                     pathlib.Path(arguments[arguments.index('-o')+1]).write_bytes(
-                        plistlib.dumps({'kMDItemTextContent':module.SENTINEL}))
+                        plistlib.dumps({'kMDItemTextContent':fixture.read_text()}))
                 if arguments[0] == 'mdfind':
                     attempts.append(True)
-                    if len(attempts) > 1: text = str(fixture) + '\n'
+                    if len(attempts) > 1: text = str(fixture) + chr(10)
                 return {'status':0,'stdout':text,'stderr':''}
             report = module.run_probe(output, runner=runner, wait_seconds=1, sleep=lambda _:None)
             self.assertTrue(report['sentinelExtracted'])
@@ -41,4 +41,29 @@ class SpotlightProbeTests(unittest.TestCase):
             self.assertEqual(report['searchStatus'], 'found')
             self.assertEqual(json.loads((output/'spotlight.json').read_text()), report)
             self.assertGreater(len(fixture.read_text().splitlines()), 1)
-            self.assertIn('\nmodule ', fixture.read_text())
+            self.assertIn(chr(10) + 'module ', fixture.read_text())
+
+    def test_repeated_probe_cannot_match_stale_indexed_content(self):
+        module = self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            output = pathlib.Path(directory).resolve()
+            fixture = output / 'spotlight-probe.scad'
+            indexed = set()
+            imports = []
+            def runner(*arguments):
+                status, text = 0, ''
+                if arguments[0] == 'mdimport' and '-o' in arguments:
+                    pathlib.Path(arguments[arguments.index('-o')+1]).write_bytes(
+                        plistlib.dumps({'kMDItemTextContent':fixture.read_text()}))
+                if arguments[0] == 'mdimport' and '-i' in arguments:
+                    imports.append(True)
+                    if len(imports) == 1: indexed.add(fixture.read_text().splitlines()[0][3:])
+                    else: status = 1
+                if arguments[0] == 'mdfind' and any(value in arguments[-1] for value in indexed):
+                    text = str(fixture) + chr(10)
+                return {'status':status,'stdout':text,'stderr':''}
+            first = module.run_probe(output, runner=runner, wait_seconds=0)
+            second = module.run_probe(output, runner=runner, wait_seconds=0)
+            self.assertTrue(first['searchFoundFixture'])
+            self.assertNotEqual(first['sentinel'],second['sentinel'])
+            self.assertFalse(second['searchFoundFixture'])

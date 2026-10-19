@@ -5,8 +5,10 @@ import plistlib
 import subprocess
 import sys
 import time
+import uuid
 
-SENTINEL = 'OpenSCADAppleFeasibilitySentinel20261019'
+SENTINEL_PREFIX = 'OpenSCADAppleFeasibilitySentinel20261019'
+LINE_FEED = chr(10)
 
 def command(*arguments):
     """Run one bounded platform command and preserve its original diagnostics."""
@@ -31,7 +33,9 @@ def run_probe(output, runner=command, wait_seconds=15, sleep=time.sleep):
     output = pathlib.Path(output).resolve()
     output.mkdir(parents=True, exist_ok=True)
     fixture = output / 'spotlight-probe.scad'
-    fixture.write_text(f'// {SENTINEL}\nmodule feasibility_sentinel() {{ cube(2); }}\nfeasibility_sentinel();\n')
+    sentinel = SENTINEL_PREFIX + uuid.uuid4().hex
+    fixture.write_text(LINE_FEED.join([f'// {sentinel}',
+        'module feasibility_sentinel() { cube(2); }', 'feasibility_sentinel();', '']))
     attributes = output / 'spotlight-attributes.plist'
     attributes.unlink(missing_ok=True)
     extraction = runner('mdimport', '-t', '-d1', '-o', str(attributes), str(fixture))
@@ -43,13 +47,13 @@ def run_probe(output, runner=command, wait_seconds=15, sleep=time.sleep):
             extraction_error = str(error)
     imported = runner('mdimport', '-i', str(fixture))
     volume = runner('mdutil', '-s', '/System/Volumes/Data')
-    report = {'sentinel': SENTINEL, 'extraction': extraction, 'extractionError': extraction_error,
-              'sentinelExtracted': SENTINEL in extracted_text, 'import': imported,
+    report = {'sentinel': sentinel, 'extraction': extraction, 'extractionError': extraction_error,
+              'sentinelExtracted': sentinel in extracted_text, 'import': imported,
               'volumeStatus': volume,
               'metadata': runner('mdls', '-name', 'kMDItemContentType', str(fixture))}
     deadline, attempts = time.monotonic() + max(0, wait_seconds), 0
     while True:
-        result = runner('mdfind', '-onlyin', str(output), f'kMDItemTextContent == "*{SENTINEL}*"')
+        result = runner('mdfind', '-onlyin', str(output), f'kMDItemTextContent == "*{sentinel}*"')
         attempts += 1
         found = str(fixture) in result['stdout'].splitlines()
         if result['status'] != 0: status = 'command_failed'
@@ -61,7 +65,7 @@ def run_probe(output, runner=command, wait_seconds=15, sleep=time.sleep):
             continue
         report.update(search=result, searchFoundFixture=found, searchStatus=status, searchAttempts=attempts)
         break
-    (output / 'spotlight.json').write_text(json.dumps(report, indent=2) + '\n')
+    (output / 'spotlight.json').write_text(json.dumps(report, indent=2) + LINE_FEED)
     return report
 
 if __name__ == '__main__':

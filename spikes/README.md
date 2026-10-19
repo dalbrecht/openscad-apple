@@ -66,10 +66,11 @@ and an ad-hoc placeholder do not establish release feasibility.
 python3 spikes/spotlight/probe.py outputs/phase-1
 ```
 
-The script creates one known saved-source sentinel, test-imports it, requests
+The script creates a fresh saved-source sentinel for each run, test-imports it, requests
 indexing, records `mdls` and polls a scoped `mdfind` query with a 15-second deadline.
 It parses XML, binary and OpenStep importer attributes structurally. Unit tests
-verify successful extraction, valid JSON/source newlines and delayed indexing.
+verify successful extraction, valid JSON/source line feeds, delayed indexing and
+rejection of stale indexed content across repeated runs.
 It changes no system settings and never evaluates SCAD or follows dependencies.
 The final metadata-service-enabled run extracts and finds the sentinel on a volume
 reporting indexing enabled. Earlier read-only observations are retained as history,

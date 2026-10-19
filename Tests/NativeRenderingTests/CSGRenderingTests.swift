@@ -17,17 +17,25 @@ import XCTest
     return faces.map { $0.flatMap { vertices[$0] } }
   }
   private func render(
-    operation: Int, wireframe: Bool = false, eyeDepth: Float = 5, scale: Float = 1
+    operation: Int, wireframe: Bool = false, eyeDepth: Float = 5, scale: Float = 1,
+    horizontalScale: Float = 1, verticalScale: Float = 1
   ) throws
     -> [UInt8]
   {
     guard let device = MTLCreateSystemDefaultDevice() else { throw XCTSkip("Metal unavailable") }
+    let transformed = { (triangles: [[Float]]) in
+      triangles.map { triangle in
+        triangle.enumerated().map { index, value in
+          value * scale * (index % 3 == 0 ? horizontalScale : index % 3 == 1 ? verticalScale : 1)
+        }
+      }
+    }
     let object: [String: Any] = [
       "version": 1,
       "leaves": [
-        ["triangles": cube(1).map { $0.map { $0 * scale } }, "color": [1, 0.8, 0.1, 1]],
+        ["triangles": transformed(cube(1)), "color": [1, 0.8, 0.1, 1]],
         [
-          "triangles": cube(0.45, depth: 2).map { $0.map { $0 * scale } },
+          "triangles": transformed(cube(0.45, depth: 2)),
           "color": [1, 0.8, 0.1, 1],
         ],
       ],
@@ -60,6 +68,10 @@ import XCTest
     texture.getBytes(
       &bytes, bytesPerRow: 64 * 4, from: MTLRegionMake2D(0, 0, 64, 64), mipmapLevel: 0)
     return bytes
+  }
+  func testLongNarrowTrianglesRemainVisible() throws {
+    let union = try render(operation: 1, horizontalScale: 1_000_000, verticalScale: 0.05)
+    XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)
   }
   func testSmallModelPreservesUnitIndependentVisibility() throws {
     let union = try render(operation: 1, scale: 0.00001)
