@@ -84,9 +84,10 @@ per-face material parity is tracked in dalbrecht/openscad-core#3.
 ## Final review follow-up
 
 Parallelism tolerance now scales by triangle area, preserving long narrow faces
-as well as uniformly small models. Spotlight uses a new random sentinel per run,
+as well as uniformly small models. Normal magnitudes use component scaling to
+avoid overflow for large-coordinate models. Spotlight uses a new random sentinel per run,
 so old indexed content cannot satisfy the current query. Generated source and
 reports use an explicit Unicode line feed; round-trip tests verify valid JSON and
-multiline source. The final local gate runs 37 Swift/Metal, 9 script and 30 core
+multiline source. The final local gate runs 38 Swift/Metal, 9 script and 30 core
 boundary tests. Core-boundary line coverage is 97.92% (84% branches), measured
 without instrumenting inherited engine code. No remote CI is configured.

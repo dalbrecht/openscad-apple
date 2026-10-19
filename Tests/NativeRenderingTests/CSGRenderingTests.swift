@@ -69,6 +69,10 @@ import XCTest
       &bytes, bytesPerRow: 64 * 4, from: MTLRegionMake2D(0, 0, 64, 64), mipmapLevel: 0)
     return bytes
   }
+  func testLargeModelPreservesUnitIndependentVisibility() throws {
+    let union = try render(operation: 1, scale: 10_000_000_000)
+    XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)
+  }
   func testLongNarrowTrianglesRemainVisible() throws {
     let union = try render(operation: 1, horizontalScale: 1_000_000, verticalScale: 0.05)
     XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)

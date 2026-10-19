@@ -30,7 +30,9 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         float3 e1=t.b.xyz-t.a.xyz, e2=t.c.xyz-t.a.xyz;
         float3 h=cross(direction,e2); float determinant=dot(e1,h);
         float3 faceNormal=cross(e1,e2);
-        float area=length(faceNormal);
+        // Scale first: squaring a valid large normal can overflow Float.
+        float normalScale=max(max(abs(faceNormal.x),abs(faceNormal.y)),abs(faceNormal.z));
+        float area=normalScale==0 ? 0 : normalScale*length(faceNormal/normalScale);
         if(area==0 || abs(determinant)<=area*1e-7) continue;
         float inverse=1/determinant;
         float3 s=camera.eye.xyz-t.a.xyz;
