@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Inventory Qt Designer actions and input controls; never infer behavioral parity.
+
+Usage: python3 script/parity_ledger.py CORE_CHECKOUT OUTPUT.csv
+Only versioned upstream GUI XML is read. Dynamic behavior requires the manual ledger.
+"""
+import csv
+import pathlib
+import sys
+import xml.etree.ElementTree as ET
+
+CONTROLS = {'QCheckBox', 'QRadioButton', 'QComboBox', 'QSpinBox', 'QDoubleSpinBox',
+            'QLineEdit', 'QPushButton', 'QToolButton', 'QSlider', 'QTextEdit',
+            'QPlainTextEdit', 'QFontComboBox', 'QKeySequenceEdit', 'QListWidget',
+            'QTreeWidget', 'QTableWidget'}
+FIELDS = ['id', 'source', 'object', 'kind', 'label', 'shortcut', 'status',
+          'native_equivalent', 'issue', 'fixture', 'evidence', 'differences']
+
+def inventory(gui_root):
+    """Return deterministic, unverified rows including controls with no label."""
+    rows = []
+    for path in sorted(pathlib.Path(gui_root).rglob('*.ui')):
+        tree = ET.parse(path)
+        relative = path.relative_to(gui_root).as_posix()
+        for item in tree.iter():
+            if item.tag != 'action' and not (item.tag == 'widget' and item.get('class') in CONTROLS):
+                continue
+            name = item.get('name', '')
+            properties = {prop.get('name'): ''.join(prop.itertext()).strip()
+                          for prop in item.findall('property')}
+            row = dict.fromkeys(FIELDS, '')
+            row.update(id=f'{relative}:{name}', source=relative, object=name,
+                       kind=item.get('class', 'QAction'), label=properties.get('text', ''),
+                       shortcut=properties.get('shortcut', ''), status='unverified')
+            rows.append(row)
+    return rows
+
+if __name__ == '__main__':
+    root, output = map(pathlib.Path, sys.argv[1:])
+    with output.open('w', newline='') as stream:
+        writer = csv.DictWriter(stream, FIELDS)
+        writer.writeheader()
+        writer.writerows(inventory(root / 'src/gui'))
