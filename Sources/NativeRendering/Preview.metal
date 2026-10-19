@@ -35,7 +35,7 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         float u=dot(s,h)*inverse; if(u < -1e-6 || u>1.000001) continue;
         float3 q=cross(s,e1); float v=dot(direction,q)*inverse;
         if(v < -1e-6 || u+v>1.000001) continue;
-        float distance=dot(e2,q)*inverse; if(distance<=0) continue;
+        float distance=dot(e2,q)*inverse;
         if(count==128) return float4(0.8,0.1,0.65,1); // Visible ray quota diagnostic.
         Event event={distance,t.metadata.x,normalize(cross(e1,e2)),min(min(u,v),1-u-v),t.color};
         uint j=count++;
@@ -48,6 +48,8 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         float epsilon=max(1e-5,abs(events[i].t)*1e-6);
         while(end<count && abs(events[end].t-events[i].t)<epsilon) { toggle |= 1ul<<events[end].leaf; end++; }
         ulong next=mask^toggle;
+        // Traverse behind the eye first so occupancy is valid inside operands.
+        if(events[i].t<=0) { mask=next; i=end; continue; }
         int layer=-1;
         bool before=evaluate(mask,nodes,camera.counts.y,camera.roots.x);
         bool after=evaluate(next,nodes,camera.counts.y,camera.roots.x);

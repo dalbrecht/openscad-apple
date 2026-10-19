@@ -16,7 +16,9 @@ import XCTest
     ]
     return faces.map { $0.flatMap { vertices[$0] } }
   }
-  private func render(operation: Int, wireframe: Bool = false) throws -> [UInt8] {
+  private func render(operation: Int, wireframe: Bool = false, eyeDepth: Float = 5) throws
+    -> [UInt8]
+  {
     guard let device = MTLCreateSystemDefaultDevice() else { throw XCTSkip("Metal unavailable") }
     let object: [String: Any] = [
       "version": 1,
@@ -41,7 +43,7 @@ import XCTest
     pass.colorAttachments[0].loadAction = .clear
     pass.colorAttachments[0].storeAction = .store
     let camera = CameraGPU(
-      eye: SIMD4(0, 0, 5, 0), right: SIMD4(1, 0, 0, 0), up: SIMD4(0, 1, 0, 0),
+      eye: SIMD4(0, 0, eyeDepth, 0), right: SIMD4(1, 0, 0, 0), up: SIMD4(0, 1, 0, 0),
       forward: SIMD4(0, 0, -1, 0),
       counts: SIMD4(UInt32(scene.triangleCount), UInt32(scene.nodes.count), 0, 0),
       options: SIMD4(1, wireframe ? 1 : 0, 0, 0), roots: SIMD4(scene.root, -1, -1, -1))
@@ -62,6 +64,10 @@ import XCTest
     XCTAssertLessThan(union[center], 80)  // yellow solid has little blue
     let wall = (32 * 64 + 44) * 4
     XCTAssertLessThan(difference[wall], 80)
+  }
+  func testIntersectionRemainsVisibleFromInsideOneOperand() throws {
+    let intersection = try render(operation: 2, eyeDepth: 1.5)
+    XCTAssertLessThan(intersection[(32 * 64 + 32) * 4], 80)
   }
   func testIntersectionAndWireframeRenderOnGPU() throws {
     let intersection = try render(operation: 2)
