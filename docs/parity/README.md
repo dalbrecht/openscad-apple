@@ -1,7 +1,7 @@
 # Qt parity ledger — phase 0
 
 Tracking: #4. Reference: upstream OpenSCAD `7bbf603833e167712e9cc7ae3432001dc26817d0`.
-Core SDK prototype: `51f9cfe870f2599a1fd0626159279ef5101ba609` in the separate
+Historical first SDK prototype: `51f9cfe870f2599a1fd0626159279ef5101ba609` in the separate
 `dalbrecht/openscad-core` repository. Native targets use HEADLESS and NULLGL.
 
 `qt-controls.csv` inventories 549 actions and interactive controls from all 30
@@ -23,6 +23,9 @@ Every row is presently owned by umbrella issue #4; split implementation issues
 before scheduling each subsystem. Acceptance requires a concrete fixture and
 recorded reference/native result, including errors and file mutations. Empty
 acceptance evidence means incomplete, regardless of menu availability.
+
+The inventory source is the exact core checkout recorded in `reference-manifest.json`;
+the current runtime worker pin is maintained separately in `core-revision.txt`.
 
 ## Reference profile
 
