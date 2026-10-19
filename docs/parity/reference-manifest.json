@@ -1,0 +1,174 @@
+{
+  "upstreamCommit": "7bbf603833e167712e9cc7ae3432001dc26817d0",
+  "coreCommit": "65b79fac2aba2cb8911703a9e7a29949af8b7948",
+  "guiTree": "b9c7abb9a055808247dc67fc8f672213225bcf43",
+  "forms": [
+    {
+      "path": "AboutDialog.ui",
+      "sha256": "bbbe4a9a18be8a201219d6c9a7b7f2473326e06b2d678dc2fc903d37bc555b7e",
+      "rows": 2
+    },
+    {
+      "path": "Animate.ui",
+      "sha256": "bf04414817071c1557eec520e67ada2542d08960e30ca6aeede71a5e4d1bac4d",
+      "rows": 14
+    },
+    {
+      "path": "ColorList.ui",
+      "sha256": "d7c36b661c6aca1081a5d9913d4281d56ad7947d9041014f7610e4d3c687c192",
+      "rows": 22
+    },
+    {
+      "path": "Console.ui",
+      "sha256": "1c22894fbcff8a3100060e76cf3f2a956effa698051220ed10dd55dc45e718c0",
+      "rows": 3
+    },
+    {
+      "path": "ErrorLog.ui",
+      "sha256": "9aa702240c2258c52532b9d8d63f49eece027488aadfa2b4114dec3437d9bb13",
+      "rows": 3
+    },
+    {
+      "path": "Export3mfDialog.ui",
+      "sha256": "f25525b405af9320b93371147619c29e764d409042eca0d5a88952a6981aeb58",
+      "rows": 29
+    },
+    {
+      "path": "ExportPdfDialog.ui",
+      "sha256": "21847bf4bcadd01c23c2f520f79f13a46e5d32bfd2ceebc8c2c82ede9449bac3",
+      "rows": 38
+    },
+    {
+      "path": "ExportSvgDialog.ui",
+      "sha256": "66284acec8193cb9cc7ebbb55fc4a8a71d5ecf885302927c298bcabc39b583bb",
+      "rows": 10
+    },
+    {
+      "path": "FontList.ui",
+      "sha256": "05da220f65c85d24d79077b78d8b3558d961301e7d9e90aa8d7f9345d287d9a2",
+      "rows": 23
+    },
+    {
+      "path": "LaunchingScreen.ui",
+      "sha256": "8ed3b9b753e6ccc5ad3db46ef9fcb0496f374afa7bca15b58ef6168bda98f9ce",
+      "rows": 8
+    },
+    {
+      "path": "LibraryInfoDialog.ui",
+      "sha256": "802c241dc611dae80a30479ce562e99849df1665d1840af4ee96a64a9d6b24cb",
+      "rows": 2
+    },
+    {
+      "path": "MainWindow.ui",
+      "sha256": "a493dd12b60dedd85041ecc24ea9cc5a45605deb80245ae12aa4694a1e750199",
+      "rows": 131
+    },
+    {
+      "path": "OctoPrintApiKeyDialog.ui",
+      "sha256": "850c3c3061e4a468a3c76c8386a2acab8ace43fcc8b6556431f7f8bbb055e835",
+      "rows": 3
+    },
+    {
+      "path": "OpenCSGWarningDialog.ui",
+      "sha256": "c906a9050b8285e8243d2aa5636901fe0d03b877986cecc80f1952d54e61c013",
+      "rows": 3
+    },
+    {
+      "path": "Preferences.ui",
+      "sha256": "7658b38e63e519b38fd78a4b943a5f27e4b6c893bf3418de2c2b8fd26a5c94a0",
+      "rows": 126
+    },
+    {
+      "path": "PrintInitDialog.ui",
+      "sha256": "7f1b7a093b343b73d4844fe335f86c86dd57a43900a0e5aa5de9def218916951",
+      "rows": 8
+    },
+    {
+      "path": "ProgressWidget.ui",
+      "sha256": "53e09c86c797df18660960bb58532f4f3ba956be44243a1832744ef9511e57f9",
+      "rows": 1
+    },
+    {
+      "path": "ViewportControl.ui",
+      "sha256": "efbe146db27b2c9339875cacd79be17d3ad5247241406d9a6c0164373874c590",
+      "rows": 12
+    },
+    {
+      "path": "ai/ChatWidget.ui",
+      "sha256": "296dd1b57ac8508270c9b9a9960985ce6a163074c83926721c8d3212189a7a76",
+      "rows": 7
+    },
+    {
+      "path": "input/AxisConfigWidget.ui",
+      "sha256": "b4267625584e599443d9c49ddff5ecc03c9fba170b0243b89cf2d788d7f60f00",
+      "rows": 45
+    },
+    {
+      "path": "input/ButtonConfigWidget.ui",
+      "sha256": "52e59a1b582caa44371781aaeaec7f6702db0b7be7d0c64c85e8833cf75e9a6b",
+      "rows": 24
+    },
+    {
+      "path": "input/MouseConfigWidget.ui",
+      "sha256": "d4e6cbfb5bf5029383e2bb4e01fed137636b618f70d86fbd2ffc36cc3452e787",
+      "rows": 13
+    },
+    {
+      "path": "parameter/ParameterCheckBox.ui",
+      "sha256": "50795955edd386546bde24b59c36a840e27471b551bdecfa95091d7df4e3b374",
+      "rows": 2
+    },
+    {
+      "path": "parameter/ParameterComboBox.ui",
+      "sha256": "7182d0f6ec7187a97e2c8c4e7299db45a9e14fff9279536b2886e820d5035b19",
+      "rows": 2
+    },
+    {
+      "path": "parameter/ParameterDescriptionWidget.ui",
+      "sha256": "810126264a8771efa58f656d53bc9a2176295fc3421959b2095934d69f34aafb",
+      "rows": 0
+    },
+    {
+      "path": "parameter/ParameterSlider.ui",
+      "sha256": "619dc7c99635cb88b4027d9eb6a3e1b1eddbffd320b4951ddd76bbbd4aa987da",
+      "rows": 3
+    },
+    {
+      "path": "parameter/ParameterSpinBox.ui",
+      "sha256": "f3125b3e224ce4e4ecd0c795027a7f9762695dd93e3475084e794b243dfa856b",
+      "rows": 2
+    },
+    {
+      "path": "parameter/ParameterText.ui",
+      "sha256": "45b7249e8abe36c3b175a9e70035246890ed99d0e7a4d6af74b170b77d6bb91e",
+      "rows": 2
+    },
+    {
+      "path": "parameter/ParameterVector.ui",
+      "sha256": "625768640f763023c3da2001d6ab64740dbc43a5da4a7d80291136c81fe40c19",
+      "rows": 5
+    },
+    {
+      "path": "parameter/ParameterWidget.ui",
+      "sha256": "4ca746fb14e3b665ec129918b345e9318cbfd99a05d429c4cfdabc14f7bd9184",
+      "rows": 6
+    }
+  ],
+  "excludedWidgetClasses": {
+    "Line": 1,
+    "QDialog": 9,
+    "QFrame": 2,
+    "QGroupBox": 42,
+    "QLabel": 189,
+    "QMainWindow": 2,
+    "QMenu": 10,
+    "QMenuBar": 1,
+    "QProgressBar": 10,
+    "QScrollArea": 19,
+    "QStackedWidget": 1,
+    "QToolBar": 3,
+    "QWidget": 60
+  },
+  "rowCount": 549,
+  "regenerationMatchesCommittedCSV": true
+}

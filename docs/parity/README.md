@@ -4,7 +4,7 @@ Tracking: #4. Reference: upstream OpenSCAD `7bbf603833e167712e9cc7ae3432001dc268
 Core SDK prototype: `51f9cfe870f2599a1fd0626159279ef5101ba609` in the separate
 `dalbrecht/openscad-core` repository. Native targets use HEADLESS and NULLGL.
 
-`qt-controls.csv` inventories 515 actions and interactive controls from all 30
+`qt-controls.csv` inventories 549 actions and interactive controls from all 30
 Qt Designer forms in the pinned source. Generate it with:
 
 ```
@@ -49,3 +49,13 @@ exit gate. Do not substitute the prototype's reduced dependency profile.
   blockers and fallback behavior.
 
 Architecture and implementation sequence: [native port plan](../native-port-plan.md).
+
+## Reproduction evidence
+
+`reference-manifest.json` records all 30 form hashes, individual row counts, the
+GUI Git tree, and excluded built-in container/display classes. Regenerating from
+the exact core pin was byte-compared against the committed CSV. Designer-declared
+custom widgets are included even when their inheritance is not a standard input
+class; checkable groups are also included, so mouse configuration, viewport and custom search controls remain visible.
+The regression covers custom controls and invalid/empty checkout paths; invalid
+input fails before the existing output is opened.
