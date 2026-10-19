@@ -29,7 +29,7 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         Triangle t=triangles[i];
         float3 e1=t.b.xyz-t.a.xyz, e2=t.c.xyz-t.a.xyz;
         float3 h=cross(direction,e2); float determinant=dot(e1,h);
-        if(abs(determinant)<1e-9) continue;
+        if(abs(determinant)<=length(e1)*length(e2)*1e-7) continue;
         float inverse=1/determinant;
         float3 s=camera.eye.xyz-t.a.xyz;
         float u=dot(s,h)*inverse; if(u < -1e-6 || u>1.000001) continue;
@@ -45,7 +45,7 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
     ulong mask=0;
     for(uint i=0;i<count;) {
         uint end=i+1; ulong toggle=1ul<<events[i].leaf;
-        float epsilon=max(1e-5,abs(events[i].t)*1e-6);
+        float epsilon=max(1e-30,abs(events[i].t)*1e-6);
         while(end<count && abs(events[end].t-events[i].t)<epsilon) { toggle |= 1ul<<events[end].leaf; end++; }
         ulong next=mask^toggle;
         // Traverse behind the eye first so occupancy is valid inside operands.

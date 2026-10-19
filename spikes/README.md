@@ -67,14 +67,14 @@ python3 spikes/spotlight/probe.py outputs/phase-1
 ```
 
 The script creates one known saved-source sentinel, test-imports it, requests
-indexing, records `mdls` and performs a scoped `mdfind` query. It changes no system
-settings and never evaluates SCAD or follows dependencies. The imported source UTI
-inherits `public.source-code`; test import currently uses Apple's RichText
-importer and extracts source text. Actual index/search success is a separate
-boolean: this host reports the data volume index as read-only and the scoped
-search has not found the fixture. Do not label extraction as successful search.
-A custom metadata importer is not justified until normal indexing is tested on a
-writable index. Consider bounded symbol metadata only after that test.
+indexing, records `mdls` and polls a scoped `mdfind` query with a 15-second deadline.
+It parses XML, binary and OpenStep importer attributes structurally. Unit tests
+verify successful extraction, valid JSON/source newlines and delayed indexing.
+It changes no system settings and never evaluates SCAD or follows dependencies.
+The final metadata-service-enabled run extracts and finds the sentinel on a volume
+reporting indexing enabled. Earlier read-only observations are retained as history,
+not the final result. System full-text indexing is feasible without a custom
+metadata importer. Rich symbol metadata and clean-machine checks remain future work.
 
 Apple APIs: [QLPreviewingController](https://developer.apple.com/documentation/QuickLookUI/QLPreviewingController),
 [Spotlight importer guidance](https://developer.apple.com/library/archive/documentation/Carbon/Conceptual/MDImporters/Concepts/WritingAnImp.html).

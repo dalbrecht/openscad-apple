@@ -4,19 +4,19 @@ Tracking: #4. Source ledger: `docs/parity/`. Separate core PR: dalbrecht/opensca
 
 ## Reference inventory
 
-515 Qt Designer actions/controls across 30 forms, plus 18 cross-cutting behavior
+549 Qt Designer actions/controls across 30 forms, plus 18 cross-cutting behavior
 families. The supplemental `qt-capabilities.csv` lists 18 export enum values and
 41 command-line registrations from the pinned source (`src/io/export.h` and
 `src/openscad.cc`). All remain unverified; optional preprocessor branches are
 retained. This is an inventory for acceptance work, not completed parity.
 
-The normal Qt configuration was attempted with HEADLESS=OFF and NULLGL=OFF.
-Missing OpenCSG and allocator sources were resolved by installing reference-only
-packages and initializing the upstream mimalloc submodule. Qt base/SVG/multimedia,
-QScintilla and OpenCSG are development reference dependencies only. Configuration
-then fails at required Lib3MF discovery. The reduced native configuration is not
-substituted for the reference. No running frozen Qt binary or comparison images
-are claimed. This remains a phase 0 exit blocker.
+The full Qt desktop reference now builds and runs with OpenCSG, CGAL, Manifold,
+Cairo and Lib3MF enabled. Its staged resources include shaders, locale, examples,
+fonts and libraries. The Welcome window and bundled examples were inspected; the
+same Boolean fixture was rendered through OpenCSG with two normalized elements.
+`qt-reference.json` records configuration, dependency versions and hashes. This
+reference is development-only and adds no native app dependency. Behavioral
+acceptance for all ledger rows remains open; a built reference is not full parity.
 
 ## Renderer
 
@@ -54,15 +54,16 @@ inside these provider probes, and no model is falsely presented as fully compile
 ## Spotlight
 
 The registered `org.openscad.source` type inherits `public.source-code`.
-`mdimport -t` selects Apple's RichText importer and extracts the saved source and
-unique sentinel. `mdimport -i`, `mdls` and a directory-scoped `mdfind` were also run.
-The data volume reports a read-only index, metadata remains null and search does
-not find the sentinel. Extraction is verified; real search is blocked here.
+A metadata-service-enabled probe selects Apple's RichText importer, extracts the
+saved-source sentinel and finds the actual file with a directory-scoped `mdfind`
+query. The latest volume status is "Indexing enabled". Earlier attempts observed a
+read-only index and no match; the repeated end-to-end run now succeeds. Unit tests
+cover XML and OpenStep metadata, valid JSON, real source newlines and asynchronous
+indexing. Sandbox-restricted command execution is not used as platform evidence.
 
-Decision: keep system text indexing as the first path. Test on a writable index
-before adding a custom metadata importer. Index saved source only; never evaluate
-SCAD or traverse libraries for search. Do not duplicate file records through Core
-Spotlight merely to conceal a failed filesystem-index test.
+Decision: use system saved-source text indexing initially. No custom importer is
+needed for full-text feasibility. Rich symbol metadata remains an optional future
+extension; never evaluate SCAD or traverse libraries for indexing.
 
 ## Reproduction and remaining gates
 
@@ -72,6 +73,9 @@ index configuration or global thumbnail cache was reset. Local build artifacts
 under iCloud encountered repeated filesystem timeouts; an exact core checkout in
 `/private/tmp` is used for repeatable build verification.
 
-Phases 0/1 have executable evidence and explicit blockers; their full exit gates
-are not complete. Next: full Lib3MF-enabled Qt reference, renderer comparison,
-actual SCAD 3D providers/helper sandbox test, and writable-index Spotlight search.
+Phases 0/1 have executable evidence; full exit gates remain incomplete. Next:
+behavioral ledger acceptance, accelerated/depth-stencil renderer comparison,
+actual SCAD 3D provider activation/helper sandbox tests and clean-machine checks.
+Protocol v1 now rejects actual per-face materials (including evaluated render()
+materials) unless an explicit uniform color override makes them representable;
+per-face material parity is tracked in dalbrecht/openscad-core#3.
