@@ -105,3 +105,18 @@ Native acceptance on this host:
 Save and Cancel were exercised; the destructive Delete choice was observed but
 not selected. Forced-crash/power-loss recovery and older macOS versions were not
 simulated. System-managed autosave/recovery depends on macOS preferences and timing.
+
+## Phase 0/1 baseline review follow-up
+
+At core revision `65b79fac2aba2cb8911703a9e7a29949af8b7948`, the complete local
+`OPENSCAD_CORE_PATH=/private/tmp/openscad-core-spike make ci` gate passes. The
+explicit checkout has the exact pin and avoids iCloud file-provider timeouts.
+The gate builds the viewer bundle and explicitly compiles the editor executable;
+it does not replace a running editor bundle. Swift/Metal tests cover the camera
+inside an operand and portrait viewport fitting. Script regressions verify failed
+linkage inspection and consistent core override selection. The separate core's
+24 boundary regressions cover failed evaluation, reflected winding, nonfinite
+colors and deep traversal quotas. No full inherited-engine coverage is claimed.
+
+The prior native document interaction evidence remains applicable; this follow-up
+does not claim a new manual portrait-window inspection or clean-machine install.

@@ -91,14 +91,18 @@ public final class OrbitView: MTKView {
     let forward = -offset
     let right = simd_normalize(simd_cross(forward, SIMD3(0, 0, 1)))
     let up = simd_cross(right, forward)
-    let eye = scene.center + offset * scene.radius * 3.2 * zoom
+    let aspect = Float(drawableSize.width / max(drawableSize.height, 1))
+    let eye =
+      scene.center + offset
+      * CameraFraming.distance(
+        radius: scene.radius, zoom: zoom, aspect: aspect)
     let camera = CameraGPU(
       eye: SIMD4(eye, 0), right: SIMD4(right, 0), up: SIMD4(up, 0), forward: SIMD4(forward, 0),
       counts: SIMD4(
         UInt32(scene.triangleCount), UInt32(scene.nodes.count), UInt32(scene.highlights.count),
         UInt32(scene.highlights.count + scene.backgrounds.count)),
       options: SIMD4(
-        Float(drawableSize.width / max(drawableSize.height, 1)), wireframe ? 1 : 0, 0, 0),
+        aspect, wireframe ? 1 : 0, 0, 0),
       roots: SIMD4(scene.root, -1, -1, -1))
     do {
       let command = try renderer.encode(pass: pass, camera: camera)
