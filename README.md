@@ -17,7 +17,7 @@ distribution packages. `make ci` builds/tests and checks Qt/OpenGL linkage.
 
 The CMake worker preserves fast CSG leaves and operations, not just final meshes.
 Drag to orbit, scroll to zoom, Fit Model to reset, Wireframe for source edges.
-The editor opens/saves .scad text and previews explicitly with Command-R.
+The editor uses native document windows: Command-N creates a draft, Command-O opens another document without replacing unsaved work, and Command-S saves. macOS manages dirty tracking, close/quit choices and recovery. Preview explicitly with Command-R. Close the editor normally before rebuilding; the launcher refuses to replace a running editor.
 Bounded prototype limits, opaque background layers and degenerate input limitations
 are documented. No full OpenCSG rendering or OpenSCAD editor parity is claimed.
 
