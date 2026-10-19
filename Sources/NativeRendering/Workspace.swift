@@ -83,34 +83,43 @@ public final class WorkspaceStore {
       }
     }
   }
-  public func save() {
-    var destination = url
-    if destination == nil {
-      let panel = NSSavePanel()
-      panel.nameFieldStringValue = name
-      guard panel.runModal() == .OK else { return }
-      destination = panel.url
-    }
-    guard let destination else { return }
-    let snapshot = source
-    let savedRequest = request
-    Task { [weak self, files] in
-      do {
-        try await files.save(source: snapshot, to: destination)
-        guard let self, request == savedRequest else { return }
-        url = destination
-        name = destination.lastPathComponent
-      } catch { self?.error = error.localizedDescription }
-    }
+  /// Updates the derived preview input; the native document binding remains the editor's authority.
+  public func updateDocument(source: String, url: URL?) {
+    self.source = source
+    self.url = url
+    name = url?.lastPathComponent ?? "Untitled.scad"
   }
+
 }
 public struct WorkspaceView: View {
   @State private var store = WorkspaceStore()
   @State private var wireframe = false
   @State private var reset = 0
-  private let editor: Bool
-  public init(editor: Bool = false) { self.editor = editor }
+  private let document: Binding<SourceDocument>?
+  private let documentURL: URL?
+  private var editor: Bool { document != nil }
+  public init() {
+    document = nil
+    documentURL = nil
+  }
+  /// The binding belongs to DocumentGroup so edits participate in native save/close/recovery handling.
+  public init(document: Binding<SourceDocument>, url: URL?) {
+    self.document = document
+    self.documentURL = url
+  }
+  private var editorSource: Binding<String> {
+    guard let document else { return $store.source }
+    return Binding(
+      get: { document.wrappedValue.source }, set: { document.wrappedValue.source = $0 })
+  }
+  private func previewDocument() {
+    if let document { store.updateDocument(source: document.wrappedValue.source, url: documentURL) }
+    store.preview()
+  }
   public var body: some View {
+    if editor { workspace } else { workspace.onOpenURL { store.open($0) } }
+  }
+  private var workspace: some View {
     VStack(spacing: 0) {
       if let message = store.error {
         HStack(alignment: .top) {
@@ -123,7 +132,7 @@ public struct WorkspaceView: View {
       }
       HSplitView {
         if editor {
-          TextEditor(text: $store.source).font(.system(.body, design: .monospaced))
+          TextEditor(text: editorSource).font(.system(.body, design: .monospaced))
             .frame(minWidth: 280, idealWidth: 380).accessibilityLabel("OpenSCAD source editor")
         }
         ZStack {
@@ -165,20 +174,28 @@ public struct WorkspaceView: View {
     .frame(minWidth: editor ? 1000 : 700, minHeight: 500)
     .navigationTitle("\(editor ? "OpenSCAD Editor" : "OpenSCAD Viewer") — \(store.name)")
     .toolbar {
-      Button {
-        store.open()
-      } label: {
-        Label("Open", systemImage: "folder")
-      }.keyboardShortcut("o")
       if editor {
         Button {
-          store.save()
+          NSDocumentController.shared.openDocument(nil)
+        } label: {
+          Label("Open", systemImage: "folder")
+        }
+      } else {
+        Button {
+          store.open()
+        } label: {
+          Label("Open", systemImage: "folder")
+        }.keyboardShortcut("o")
+      }
+      if editor {
+        Button {
+          NSApp.sendAction(#selector(NSDocument.save(_:)), to: nil, from: nil)
         } label: {
           Label("Save", systemImage: "square.and.arrow.down")
-        }.keyboardShortcut("s")
+        }
       }
       Button {
-        store.preview()
+        previewDocument()
       } label: {
         Label("Preview", systemImage: "play")
       }.keyboardShortcut("r")
@@ -189,8 +206,10 @@ public struct WorkspaceView: View {
         Label("Fit Model", systemImage: "arrow.up.left.and.arrow.down.right")
       }
     }
-    .task { if store.scene == nil && !store.busy { store.preview() } }
-    .onOpenURL { store.open($0) }
+    .task { if store.scene == nil && !store.busy { previewDocument() } }
+    .onChange(of: documentURL) { _, url in
+      if let document { store.updateDocument(source: document.wrappedValue.source, url: url) }
+    }
     .onDisappear { store.cancel() }
   }
 }

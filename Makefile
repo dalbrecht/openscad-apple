@@ -3,6 +3,7 @@ build:
 	./script/build_and_run.sh --build-only
 
 test:
+	python3 -m unittest discover -s script/tests
 	OPENSCAD_TEST_WORKER="$(CURDIR)/work/openscad-core/build-native/openscad-preview-worker" ./script/swift.sh test --enable-code-coverage
 	python3 work/openscad-core/native/tests/test_preview.py work/openscad-core/build-native/openscad-preview-worker
 

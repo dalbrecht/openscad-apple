@@ -10,11 +10,26 @@ case "$MODE" in run|--build-only|--verify|--debug|--logs|--telemetry) ;; *) exit
 BUILD_ROOT="${OPENSCAD_BUILD_ROOT:-/private/tmp/openscad-apple-native}"
 BUNDLE="$BUILD_ROOT/app/$APP.app"
 CORE="${OPENSCAD_CORE_PATH:-$ROOT/work/openscad-core}"
+ensure_editor_closed() {
+  if [ "$APP" != OpenSCADEditor ]; then return; fi
+  if pgrep -x "$APP" >/dev/null; then
+    echo "Close OpenSCAD Editor normally before rebuilding; unsaved documents must not be killed or replaced." >&2
+    exit 1
+  else
+    STATUS=$?
+    if [ "$STATUS" -ne 1 ]; then
+      echo "Cannot safely check whether OpenSCAD Editor is running; refusing to replace its bundle." >&2
+      exit 1
+    fi
+  fi
+}
+ensure_editor_closed
 "$ROOT/script/build_core.sh"
 "$ROOT/script/swift.sh" build --product "$APP"
 BIN="$("$ROOT/script/swift.sh" build --show-bin-path)"
-# Stop only this dedicated product; the Dust3D applications are independent.
-pkill -x "$APP" 2>/dev/null || true
+# Recheck after compilation in case the editor was opened while the build ran.
+ensure_editor_closed
+if [ "$APP" = OpenSCADViewer ]; then pkill -x "$APP" 2>/dev/null || true; fi
 mkdir -p "$BUNDLE/Contents/MacOS" "$BUNDLE/Contents/Resources" "$ROOT/outputs"
 cp "$BIN/$APP" "$BUNDLE/Contents/MacOS/"
 cp "$CORE/build-native/openscad-preview-worker" "$BUNDLE/Contents/MacOS/"
@@ -32,9 +47,17 @@ cat > "$BUNDLE/Contents/Info.plist" <<PLIST
 <key>CFBundleDocumentTypes</key><array><dict>
 <key>CFBundleTypeName</key><string>OpenSCAD Design</string>
 <key>CFBundleTypeExtensions</key><array><string>scad</string></array>
+<key>LSItemContentTypes</key><array><string>org.openscad.source</string></array>
 <key>CFBundleTypeRole</key><string>$ROLE</string>
 <key>LSHandlerRank</key><string>Alternate</string>
 </dict></array>
+<key>UTImportedTypeDeclarations</key><array><dict>
+<key>UTTypeIdentifier</key><string>org.openscad.source</string>
+<key>UTTypeDescription</key><string>OpenSCAD Source</string>
+<key>UTTypeConformsTo</key><array><string>public.source-code</string></array>
+<key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>scad</string></array></dict>
+</dict></array>
+<key>NSDocumentsUseCocoaOpenPanel</key><true/>
 </dict></plist>
 PLIST
 xattr -cr "$BUNDLE"

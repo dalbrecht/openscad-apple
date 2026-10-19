@@ -22,7 +22,7 @@ geometry paths remain; this is not a claim of 100% engine coverage.
 
 ## Swift and GPU
 
-27 Swift/GPU tests pass without skips. New Swift file coverage: PreviewCompiler
+32 Swift/GPU tests pass without skips. New Swift file coverage: PreviewCompiler
 98.55% lines, PreviewScene 98.73%, SourceFileService 95.24%. Production GPU resource
 encoding measures 94.37%; AppKit viewport and macro-expanded SwiftUI workspace have
 lower automated coverage (38.27% and 14.54%) and are supplemented by native checks.
@@ -63,14 +63,45 @@ Large scenes can be expensive; no GPU acceleration structure is implemented.
 Core geometry workspace memory is not hard capped and local includes/imports are
 not sandboxed. Normal process isolation is not a hostile-document security boundary.
 
-The editor has explicit preview/open/save and the standard text control; syntax
-highlighting, customizer, export, animation, autosave, dirty-document close recovery
-and full document lifecycle protection are not implemented. Save edits explicitly
-before opening or closing documents. Linux/Windows core runtime tests, macOS 14
+The editor uses native DocumentGroup/FileDocument ownership for source editing,
+coordinated saves, dirty tracking, close/quit protection and macOS recovery. Syntax
+highlighting, customizer, export and animation remain unimplemented. Recovery timing
+is controlled by macOS; immediate power-loss durability is not guaranteed. Linux/Windows core runtime tests, macOS 14
 runtime deployment and distribution packaging remain unverified.
 
 ## Final local gate
 
-`make ci` passes: 27 Swift/Metal tests, 20 core tests, strict Swift formatting,
+`make ci` passes: 32 Swift/Metal tests, 2 launcher regression tests, 20 core tests, strict Swift formatting,
 shell parsing and Qt/OpenGL linkage rejection. No tests are skipped in that run.
 Core PR #2 reports no remote checks configured; local results are not remote CI.
+
+## Dirty-document follow-up (PR #2, issue #3)
+
+The editor now binds TextEditor directly to the native document value. Open uses
+native document commands, preserving the edited draft in a separate window. Save
+uses the responder chain; native macOS owns close/quit decisions and recovery.
+The viewer remains read-only. See ADR 0002.
+
+Added regression coverage includes independent saved/recovery snapshots, saving
+incomplete/invalid SCAD, malformed UTF-8 and source quotas, retained edits after
+failed encoding, current source/path preview snapshots, and refusing bundle
+replacement both for a running editor and failed process inspection. The
+FileDocument bridge measures 58.33% automated line coverage: framework-created
+read/write configurations and native dialogs are a thin manual boundary; their
+constructors are not public. This is not claimed as 95% whole-adapter coverage.
+
+Native acceptance on this host:
+- Created an edited untitled draft and closed it; macOS presented Save/Delete/Cancel.
+- Cancel kept the complete source and edited indicator.
+- Opened acceptance-model.scad; both it and the original dirty draft remained in
+  the Window menu, and the original source was unchanged when selected again.
+- Toolbar Save wrote dirty-recovery-model.scad with matching UTF-8 bytes.
+- Quit with another edited draft presented the same native protection. Cancel
+  aborted quitting and retained all text. Command-S then saved that source as
+  quit-protection-model.scad; Preview rendered its sphere.
+- The real launcher refused an attempted editor rebuild while those windows were
+  open, without replacing the bundle or closing documents.
+
+Save and Cancel were exercised; the destructive Delete choice was observed but
+not selected. Forced-crash/power-loss recovery and older macOS versions were not
+simulated. System-managed autosave/recovery depends on macOS preferences and timing.

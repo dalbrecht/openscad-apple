@@ -11,11 +11,14 @@ materials; OpenSCAD has different source semantics and that feature is not claim
    orbit/zoom/fit, wireframe, counts, copied snapshots, stale-result suppression.
    Basic rendered/GPU checks pass; full parity requires a larger upstream compatibility corpus.
 3. Editor: separate application with shared renderer; source editing, preview,
-   open/save and standard text undo. Source highlighting, customizer, diagnostics
-   locations, export, animation, autosave, dirty-document close protection and comprehensive editing parity follow.
+   native document open/save, dirty tracking, close/quit protection and source recovery.
+   Source highlighting, customizer, diagnostics locations, export, animation and
+   comprehensive editing parity follow.
 
 The prototype must not be described as viewer parity until the rendered checks and
 remaining limitations are recorded. Signing is local/ad-hoc only; distribution,
 notarization and App Store work are deferred. PRs are never auto-merged.
 
 See docs/verification.md for observed native behavior, measured coverage and limits.
+
+Editor document ownership and recovery: docs/adr/0002-native-document-recovery.md.

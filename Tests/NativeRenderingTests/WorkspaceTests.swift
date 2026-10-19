@@ -77,3 +77,27 @@ extension WorkspaceTests {
     XCTAssertFalse(store.busy)
   }
 }
+private actor RecordingCompiler: PreviewCompiling {
+  private var input: (String, URL?)?
+  func compile(source: String, documentURL: URL?) async throws -> PreviewScene {
+    input = (source, documentURL)
+    return try PreviewScene.decode(
+      Data(#"{"version":1,"leaves":[],"nodes":[],"root":-1,"highlights":[],"backgrounds":[]}"#.utf8)
+    )
+  }
+  func lastInput() -> (String, URL?)? { input }
+}
+extension WorkspaceTests {
+  func testDocumentPreviewUsesCurrentUnsavedTextAndLogicalSaveLocation() async {
+    let compiler = RecordingCompiler()
+    let store = WorkspaceStore(compiler: compiler)
+    let location = URL(fileURLWithPath: "/tmp/renamed/model.scad")
+    store.updateDocument(source: "// not yet saved\ncube(3);", url: location)
+    await store.preview().value
+    let input = await compiler.lastInput()
+    XCTAssertEqual(input?.0, "// not yet saved\ncube(3);")
+    XCTAssertEqual(input?.1, location)
+    XCTAssertEqual(store.name, "model.scad")
+    XCTAssertNil(store.error)
+  }
+}
