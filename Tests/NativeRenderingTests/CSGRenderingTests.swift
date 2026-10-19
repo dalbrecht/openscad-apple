@@ -16,15 +16,28 @@ import XCTest
     ]
     return faces.map { $0.flatMap { vertices[$0] } }
   }
-  private func render(operation: Int, wireframe: Bool = false, eyeDepth: Float = 5) throws
+  private func render(
+    operation: Int, wireframe: Bool = false, eyeDepth: Float = 5, scale: Float = 1,
+    horizontalScale: Float = 1, verticalScale: Float = 1
+  ) throws
     -> [UInt8]
   {
     guard let device = MTLCreateSystemDefaultDevice() else { throw XCTSkip("Metal unavailable") }
+    let transformed = { (triangles: [[Float]]) in
+      triangles.map { triangle in
+        triangle.enumerated().map { index, value in
+          value * scale * (index % 3 == 0 ? horizontalScale : index % 3 == 1 ? verticalScale : 1)
+        }
+      }
+    }
     let object: [String: Any] = [
       "version": 1,
       "leaves": [
-        ["triangles": cube(1), "color": [1, 0.8, 0.1, 1]],
-        ["triangles": cube(0.45, depth: 2), "color": [1, 0.8, 0.1, 1]],
+        ["triangles": transformed(cube(1)), "color": [1, 0.8, 0.1, 1]],
+        [
+          "triangles": transformed(cube(0.45, depth: 2)),
+          "color": [1, 0.8, 0.1, 1],
+        ],
       ],
       "nodes": [
         ["op": 0, "left": 0, "right": -1], ["op": 0, "left": 1, "right": -1],
@@ -43,7 +56,7 @@ import XCTest
     pass.colorAttachments[0].loadAction = .clear
     pass.colorAttachments[0].storeAction = .store
     let camera = CameraGPU(
-      eye: SIMD4(0, 0, eyeDepth, 0), right: SIMD4(1, 0, 0, 0), up: SIMD4(0, 1, 0, 0),
+      eye: SIMD4(0, 0, eyeDepth * scale, 0), right: SIMD4(1, 0, 0, 0), up: SIMD4(0, 1, 0, 0),
       forward: SIMD4(0, 0, -1, 0),
       counts: SIMD4(UInt32(scene.triangleCount), UInt32(scene.nodes.count), 0, 0),
       options: SIMD4(1, wireframe ? 1 : 0, 0, 0), roots: SIMD4(scene.root, -1, -1, -1))
@@ -55,6 +68,18 @@ import XCTest
     texture.getBytes(
       &bytes, bytesPerRow: 64 * 4, from: MTLRegionMake2D(0, 0, 64, 64), mipmapLevel: 0)
     return bytes
+  }
+  func testLargeModelPreservesUnitIndependentVisibility() throws {
+    let union = try render(operation: 1, scale: 10_000_000_000)
+    XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)
+  }
+  func testLongNarrowTrianglesRemainVisible() throws {
+    let union = try render(operation: 1, horizontalScale: 1_000_000, verticalScale: 0.05)
+    XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)
+  }
+  func testSmallModelPreservesUnitIndependentVisibility() throws {
+    let union = try render(operation: 1, scale: 0.00001)
+    XCTAssertLessThan(union[(32 * 64 + 32) * 4], 80)
   }
   func testDifferenceShowsHoleWhileUnionIsSolid() throws {
     let difference = try render(operation: 3)

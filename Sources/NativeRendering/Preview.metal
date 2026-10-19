@@ -29,7 +29,11 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         Triangle t=triangles[i];
         float3 e1=t.b.xyz-t.a.xyz, e2=t.c.xyz-t.a.xyz;
         float3 h=cross(direction,e2); float determinant=dot(e1,h);
-        if(abs(determinant)<1e-9) continue;
+        float3 faceNormal=cross(e1,e2);
+        // Scale first: squaring a valid large normal can overflow Float.
+        float normalScale=max(max(abs(faceNormal.x),abs(faceNormal.y)),abs(faceNormal.z));
+        float area=normalScale==0 ? 0 : normalScale*length(faceNormal/normalScale);
+        if(area==0 || abs(determinant)<=area*1e-7) continue;
         float inverse=1/determinant;
         float3 s=camera.eye.xyz-t.a.xyz;
         float u=dot(s,h)*inverse; if(u < -1e-6 || u>1.000001) continue;
@@ -37,7 +41,7 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
         if(v < -1e-6 || u+v>1.000001) continue;
         float distance=dot(e2,q)*inverse;
         if(count==128) return float4(0.8,0.1,0.65,1); // Visible ray quota diagnostic.
-        Event event={distance,t.metadata.x,normalize(cross(e1,e2)),min(min(u,v),1-u-v),t.color};
+        Event event={distance,t.metadata.x,faceNormal/area,min(min(u,v),1-u-v),t.color};
         uint j=count++;
         while(j>0 && events[j-1].t>distance) { events[j]=events[j-1]; j--; }
         events[j]=event;
@@ -45,7 +49,7 @@ fragment float4 preview(Varying in [[stage_in]], constant Triangle *triangles [[
     ulong mask=0;
     for(uint i=0;i<count;) {
         uint end=i+1; ulong toggle=1ul<<events[i].leaf;
-        float epsilon=max(1e-5,abs(events[i].t)*1e-6);
+        float epsilon=max(1e-30,abs(events[i].t)*1e-6);
         while(end<count && abs(events[end].t-events[i].t)<epsilon) { toggle |= 1ul<<events[end].leaf; end++; }
         ulong next=mask^toggle;
         // Traverse behind the eye first so occupancy is valid inside operands.

@@ -1,0 +1,84 @@
+{
+  "upstreamCommit": "7bbf603833e167712e9cc7ae3432001dc26817d0",
+  "qtCheckoutCommit": "65b79fac2aba2cb8911703a9e7a29949af8b7948",
+  "guiTree": "b9c7abb9a055808247dc67fc8f672213225bcf43",
+  "configuration": {
+    "APPLE_UNIX": "ON",
+    "ENABLE_CAIRO": "AUTO",
+    "ENABLE_CGAL": "ON",
+    "ENABLE_EGL": "ON",
+    "ENABLE_GAMEPAD": "AUTO",
+    "ENABLE_GLX": "ON",
+    "ENABLE_GUI_TESTS": "OFF",
+    "ENABLE_HIDAPI": "AUTO",
+    "ENABLE_MANIFOLD": "ON",
+    "ENABLE_NATIVE_PREVIEW": "OFF",
+    "ENABLE_OSMESA": "OFF",
+    "ENABLE_PYTHON": "OFF",
+    "ENABLE_QTDBUS": "ON",
+    "ENABLE_SPNAV": "AUTO",
+    "ENABLE_TESTS": "OFF",
+    "HEADLESS": "OFF",
+    "NULLGL": "OFF",
+    "USE_MIMALLOC": "ON"
+  },
+  "reportedVersions": {
+    "OpenSCAD Version": "2026.10.19 (git 65b79fa)",
+    "Compiler": "Clang \"21.0.0 (clang-2100.3.34.2)\"",
+    "Boost version": "1_92",
+    "Eigen version": "3.5.0",
+    "OpenCSG version": "OpenCSG 1.8.2",
+    "Clipper2 version": "2.0.1",
+    "Manifold version": "3.5.3",
+    "Qt version": "6.12.0",
+    "QScintilla version": "2.14.1",
+    "GLib version": "2.90.1",
+    "lodepng version": "20260102",
+    "libzip version": "1.12.1",
+    "fontconfig version": "2.18.3",
+    "freetype version": "2.15.0",
+    "harfbuzz version": "14.6.0",
+    "cairo version": "1.18.6",
+    "lib3mf version": "2.5.0",
+    "mi-malloc version": "3.3.2",
+    "GLAD version": "2.0.4",
+    "OpenGL Version": "2.1 Metal - 91.7",
+    "GL Renderer": "Apple M5"
+  },
+  "submodules": [
+    {
+      "path": ".standards",
+      "revision": "20ebe761ab14a2f7aa0e523d2058cd2345068cd7"
+    },
+    {
+      "path": "libraries/MCAD",
+      "revision": "1ea402208c3127ffb443931e9bb1681c191dacca"
+    },
+    {
+      "path": "submodules/Clipper2",
+      "revision": "c7f820f6a03fa91f189b866d27bf40dfe47abaa6"
+    },
+    {
+      "path": "submodules/OpenCSG",
+      "revision": "9bf122715213dca05e70993dd8672fe3aa36c518"
+    },
+    {
+      "path": "submodules/manifold",
+      "revision": "0edd9d54876f3135e431575214dd6d8a72866fee"
+    },
+    {
+      "path": "submodules/mimalloc",
+      "revision": "30b2d9d89099bee08e9f67a1ffb3e12e7ba45227"
+    },
+    {
+      "path": "submodules/sanitizers-cmake",
+      "revision": "bcb1fc68616e9645ca5acea2992412606373ab04"
+    }
+  ],
+  "binarySHA256": "07d380446f7b0bc42e34f8d770766c15b995e4708345dab746d19cca5a79d675",
+  "lib3mfSDKArchiveSHA256": "29e45884051e7f7d38dcc8922c0996dc8c60a3d6136d33d01976b3522e7d14eb",
+  "runtimeVerified": true,
+  "welcomeWindowInspected": true,
+  "qtEngineTestsRun": false,
+  "nativeParityAccepted": false
+}
