@@ -35,11 +35,11 @@ Record enabled build flags, dependency versions, fonts, locale and scale alongsi
 reference screenshots. Python, AI, input devices and print services require
 separate optional profiles; they are not silently excluded from scope.
 
-**Reference binary not yet frozen:** the repository contains the pinned Qt source,
-but the currently built worker is headless and does not establish Qt runtime
-behavior. No reference screenshot or full parity acceptance is claimed. Building
-the full desktop profile and recording its dependency manifest remains a phase 0
-exit gate. Do not substitute the prototype's reduced dependency profile.
+**Runtime evidence is separate from this source inventory.** A full normal desktop
+Qt reference has now been built and run during the focused
+[feasibility work](https://github.com/dalbrecht/openscad-apple/pull/6). Its dependency
+manifest and example render are recorded there. This ledger still claims no
+behavioral acceptance or full parity; each row requires its own evidence.
 
 ## Phase gates
 
