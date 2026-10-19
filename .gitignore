@@ -1,0 +1,5 @@
+.build/
+work/
+outputs/
+dist/
+.DS_Store
