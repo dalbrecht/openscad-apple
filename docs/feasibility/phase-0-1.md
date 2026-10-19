@@ -23,8 +23,11 @@ are claimed. This remains a phase 0 exit blocker.
 The production Metal encoder rendered actual worker-generated difference, curved
 surface and modifier-layer scenes. On Apple M5 at 256px, the first experiment's
 median GPU execution was 2.37 / 5.37 / 3.01 ms for 584 / 2300 / 1156 triangles.
+The expanded 1024px run measured 21.15 / 86.31 / 43.39 ms respectively.
 These are device-specific GPU timings, excluding compilation, decode, pipeline
-creation and presentation. XCTest saves an expanded 256/1024px report separately.
+creation and presentation. The curved fixture already exceeds a 60fps frame
+budget by over five times, so the brute-force path is not a production performance
+solution. XCTest saves the complete 256/1024px report separately.
 The rendered difference image visibly contains the cutout. Existing pixel tests
 check union/intersection/difference and a new camera-inside-operand regression.
 
